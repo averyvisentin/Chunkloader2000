@@ -1,3 +1,5 @@
+--we bad at this
+
 -- Function to move the turtle forward a specified number of steps
 local function moveForward(steps)
     for i = 1, steps do
