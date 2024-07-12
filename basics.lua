@@ -1,6 +1,6 @@
 inf = 1e309
 
-bumps = {
+bumps = {               
     north = { 0,  0, -1},
     south = { 0,  0,  1},
     east  = { 1,  0,  0},
@@ -68,3 +68,4 @@ function in_location(xyzo, location)            --checks if xyzo matches a speci
     end
     return true
 end
+
