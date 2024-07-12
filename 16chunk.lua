@@ -132,3 +132,8 @@ function isLowOnFuel()
     return fuelLevel < minimumFuelLevel + fuelConsumptionRate
 end
 
+--print debug messages
+function dPrint(huh)
+    print("[DEBUG] " .. huh)
+end
+--debug print
