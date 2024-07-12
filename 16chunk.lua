@@ -1,139 +1,116 @@
 --we bad at this
 
--- Function to move the turtle forward a specified number of steps
-local function moveForward(steps)
-    for i = 1, steps do
-        while not turtle.forward() do
-            turtle.dig()
-            turtle.attack()
-        end
-    end
-end
+-- Example of calling functions from the basics module
+local basics = require("/apis/basics.lua") -- Adjust "path.to.basics" as necessary
+local newPos = basics.NewPos("north")
+local currentPosition = basics.Current()
+local isInLocation = basics.In_location({x=10, y=5, z=2}, {x=10, y=5, z=2})
+local isInArea = basics.In_area({x=5, y=5, z=5}, {min_x=1, max_x=10, min_y=1, max_y=10, min_z=1, max_z=10})
 
--- Function to move the turtle to a specified Y coordinate
-local function moveToY(targetY)
-    local currentY = select(2, gps.locate(5))
-
-    if currentY < targetY then
-        while currentY < targetY do
-            if not turtle.up() then
-                turtle.digUp()
-            else
-                currentY = currentY + 1
-            end
-        end
-    elseif currentY > targetY then
-        while currentY > targetY do
-            if not turtle.down() then
-                turtle.digDown()
-            else
-                currentY = currentY - 1
-            end
-        end
-    end
-end
-
-local function main()
-    print("Enter the target Y coordinate:")
-    local targetY = tonumber(read())
-    moveToY(targetY)
-
-    local sideLength = 2000
-    local areaSideLength = 16
-    local areasPerSide = sideLength / areaSideLength
-
-    for row = 1, areasPerSide do
-        for column = 1, areasPerSide do
-            -- Move the turtle in a 16x16 square
-            for i = 1, 4 do
-                moveForward(areaSideLength - 1) -- Adjust for the initial position in each side
-                turtle.turnRight()
-            end
-            -- Move to the start of the next 16x16 area, if not at the end of a row
-            if column < areasPerSide then
-                moveForward(areaSideLength)
-            end
-        end
-        -- Change direction at the end of each row and move to the start of the next row
-        if row % 2 == 0 then
-            turtle.turnLeft()
-            moveForward(areaSideLength)
-            turtle.turnLeft()
-        else
-            turtle.turnRight()
-            if row < areasPerSide then -- Avoid moving beyond the last row
-                moveForward(areaSideLength)
-            end
-            turtle.turnRight()
-        end
-    end
-end
-
--- Start the main function
 main()
--- Function to log the turtle's starting position
-function startPosition()
-    local startX, startY, startZ = gps.locate(5)
-    local file = fs.open("start_position.txt", "w")
-    file.writeLine("Start Position: " .. startX .. ", " .. startY .. ", " .. startZ)
+-- Corrected and enhanced function to log the turtle's starting position with facing direction
+
+
+function Home(facing)
+    local SX, SY, SZ = gps.locate(5)
+    local file = fs.open("start.txt", "w")
+    if facing then
+        file.writeLine("Start Position: " .. SX .. ", " .. SY .. ", " .. SZ .. ", Facing: " .. facing)
+    else
+        file.writeLine("Start Position: " .. SX .. ", " .. SY .. ", " .. SZ)
+    end
     file.close()
-    return startX, startY, startZ
+    if facing then
+        return SX .. ',' .. SY .. ',' .. SZ .. ':' .. facing
+    else
+        return SX .. ',' .. SY .. ',' .. SZ
+    end
 end
 
--- Function to return the turtle to its starting position
-function returnTostartPosition(startX, startY, startZ)
-    local currentX, currentY, currentZ = gps.locate(5)
-    local distanceX = currentX - startX
-    local distanceY = currentY - startY
-    local distanceZ = currentZ - startZ
+function Wherehome()
+    local file = fs.open("start.txt", "r") -- Correct the filename typo
+    local line = file.readLine()
+    file.close()
+    -- Assuming the line format is "Start Position: X, Y, Z, Facing: F" or "Start Position: X, Y, Z"
+    local _, _, SX, SY, SZ, facing = string.find(line, "Start Position: (%d+), (%d+), (%d+),? Facing:?(.*)")
+    SX, SY, SZ = tonumber(SX), tonumber(SY), tonumber(SZ)
+    if facing ~= "" then
+        facing = facing:trim() -- Remove any leading/trailing spaces
+    else
+        facing = nil
+    end
+    return SX, SY, SZ, facing
+end
 
-    -- Move the turtle back to the starting position
+-- Function to move the turtle back to the starting position
+function Gohome(SX, SY, SZ)
+    -- Obtain current position from basics.current()
+    local currentX, currentY, currentZ = basics.current()
+
+    local distanceX = currentX - SX
+    local distanceY = currentY - SY
+    local distanceZ = currentZ - SZ
+
+    -- Move the turtle back to the starting position along the X-axis
     if distanceX > 0 then
         turtle.turnLeft()
-        moveForward(distanceX)
+        turtle.moveForward(distanceX)
         turtle.turnRight()
     elseif distanceX < 0 then
         turtle.turnRight()
-        moveForward(math.abs(distanceX))
+        turtle.moveForward(math.abs(distanceX))
         turtle.turnLeft()
     end
 
-    if distanceY > 0 then
-        moveToY(startY)
-    elseif distanceY < 0 then
-        moveToY(startY)
-    end
+    -- Move the turtle back to the starting position along the Y-axis
+    -- Assuming moveToY handles direction internally
+    moveToY(SY)
 
+    -- Move the turtle back to the starting position along the Z-axis
     if distanceZ > 0 then
         turtle.turnRight()
-        moveForward(distanceZ)
+        turtle.moveForward(distanceZ)
         turtle.turnLeft()
     elseif distanceZ < 0 then
         turtle.turnLeft()
-        moveForward(math.abs(distanceZ))
+        turtle.moveForward(math.abs(distanceZ))
         turtle.turnRight()
     end
 end
 
--- Call the logStartPosition function at the beginning of the script
-local startX, startY, startZ = StartPosition()
-
--- Call the returnToStartPosition function at the end of the script or when low on fuel
-if isLowOnFuel() then
-    returnToStartPosition(startX, startY, startZ)
-end
-
 -- Function to check if the turtle is low on fuel
-function isLowOnFuel()
-    local fuelLevel = turtle.getFuelLevel()
-    local minimumFuelLevel = 100 -- Adjust this value as needed
-    local fuelConsumptionRate = 80 -- Adjust this value based on the fuel efficiency
-
-    return fuelLevel < minimumFuelLevel + fuelConsumptionRate
+function IsLowOnFuel()
+    local startPos = {x = SX, y = SY, z = SZ} -- Assuming SX, SY, SZ are global variables holding the start position
+    local currentPos = --should be read from start.txt
+    local distanceToHome = D2(startPos, currentPos)
+    local fuelConsumptionRate = 1 -- Assuming 1 unit of fuel is consumed per block moved
+    local fuelNeededToReturnHome = distanceToHome * fuelConsumptionRate
+    local fuelBuffer = 20 -- Additional fuel buffer for safety
+    local minimumFuelLevel = fuelNeededToReturnHome + fuelBuffer
+    local currentFuelLevel = turtle.getFuelLevel()
+    return currentFuelLevel < minimumFuelLevel
+end
+-- Call the returnToStartPosition function at the end of the script or when low on fuel
+if IsLowOnFuel() then
+    Gohome(SX, SY, SZ)
 end
 
 --print debug messages
-function dPrint(huh)
+function BPrint(huh)
     print("[DEBUG] " .. huh)
 end
---debug print
+
+
+-- Function to calculate the total fuel needed to return to the starting position with a buffer
+function FuelRequirement(SX, SY, SZ, fuelBuffer)
+    local currentX, currentY, currentZ = gps.locate(5)
+    local distanceToHome = Distance(Pos, StartPosition)
+    local totalFuelNeeded = distanceToHome + fuelBuffer -- Add buffer for error handling
+    return totalFuelNeeded
+end
+
+-- Example usage
+local startX, startY, startZ = 0, 0, 0 -- Assuming starting position is (0, 0, 0) for demonstration
+local fuelBuffer = 20 -- Adjust based on expected obstacles or errors
+local fuelNeeded = FuelRequirement(startX, startY, startZ, fuelBuffer)
+print("Fuel needed to return home with buffer: " .. fuelNeeded)
