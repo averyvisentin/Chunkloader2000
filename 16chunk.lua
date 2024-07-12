@@ -71,3 +71,69 @@ end
 
 -- Start the main function
 main()
+-- Function to log the turtle's starting position
+function startPosition()
+    local startX, startY, startZ = gps.locate(5)
+    local file = fs.open("start_position.txt", "w")
+    file.writeLine("Start Position: " .. startX .. ", " .. startY .. ", " .. startZ)
+    file.close()
+    return startX, startY, startZ
+end
+
+-- Function to return the turtle to its starting position
+function returnTostartPosition(startX, startY, startZ)
+    local currentX, currentY, currentZ = gps.locate(5)
+    local distanceX = currentX - startX
+    local distanceY = currentY - startY
+    local distanceZ = currentZ - startZ
+
+    -- Move the turtle back to the starting position
+    if distanceX > 0 then
+        turtle.turnLeft()
+        moveForward(distanceX)
+        turtle.turnRight()
+    elseif distanceX < 0 then
+        turtle.turnRight()
+        moveForward(math.abs(distanceX))
+        turtle.turnLeft()
+    end
+
+    if distanceY > 0 then
+        moveToY(startY)
+    elseif distanceY < 0 then
+        moveToY(startY)
+    end
+
+    if distanceZ > 0 then
+        turtle.turnRight()
+        moveForward(distanceZ)
+        turtle.turnLeft()
+    elseif distanceZ < 0 then
+        turtle.turnLeft()
+        moveForward(math.abs(distanceZ))
+        turtle.turnRight()
+    end
+end
+
+-- Call the logStartPosition function at the beginning of the script
+local startX, startY, startZ = StartPosition()
+
+-- Call the returnToStartPosition function at the end of the script or when low on fuel
+if isLowOnFuel() then
+    returnToStartPosition(startX, startY, startZ)
+end
+
+-- Function to check if the turtle is low on fuel
+function isLowOnFuel()
+    local fuelLevel = turtle.getFuelLevel()
+    local minimumFuelLevel = 100 -- Adjust this value as needed
+    local fuelConsumptionRate = 80 -- Adjust this value based on the fuel efficiency
+
+    return fuelLevel < minimumFuelLevel + fuelConsumptionRate
+end
+
+--print debug messages
+function dPrint(huh)
+    print("[DEBUG] " .. huh)
+end
+--debug print
