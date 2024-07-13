@@ -28,10 +28,9 @@ Reverse_shift = {--180 degrees
 }
 
 local state = {}
-local x, y, z = Current()
 
--- Function to set the starting position
-function Start(coordinates, face)
+
+function Start(coordinates, facing) -- Function to set the starting position
     -- Initialize the start sub-table if it doesn't exist
     state.start = state.start or {}
     gps.locate(1)
@@ -45,7 +44,7 @@ function Start(coordinates, face)
     -- Open the "state" file for writing
     local file = fs.open("state", "w")
     if file then
-        -- Serialize the entire state table and write it to the file
+        -- Serialize the state table and write it to the file
         local serializedState = textutils.serialize(state)
         file.write(serializedState)
         file.close()
@@ -54,23 +53,35 @@ function Start(coordinates, face)
     -- Construct the return string using state.start.X, state.start.Y, state.start.Z
     if facing then
         return state.start.X .. ',' .. state.start.Y .. ',' .. state.start.Z .. ':' .. face
-    else
+    else    -- If 'facing' is not provided, return just the coordinates
         return state.start.X .. ',' .. state.start.Y .. ',' .. state.start.Z
     end
 end
 
---function to get the current position
-function Current(coordinates, face)
+function str_xyz(coordinates, facing)
+    if facing then
+        return coordinates.x .. ',' .. coordinates.y .. ',' .. coordinates.z .. ':' .. facing
+    else
+        return coordinates.x .. ',' .. coordinates.y .. ',' .. coordinates.z
+    end
+end
+
+-- Function to get the current position
+function Current(coordinates, facing)
     if coordinates then
         -- Update state.location with new coordinates and facing direction
         local cx, cy, cz = table.unpack(coordinates)
-        state.location = { X = cx, Y = cy, Z = cz, facing = face }
+        state.location = { X = cx, Y = cy, Z = cz, facing = facing }
+        
         -- Serialize and write state to file
         local file = fs.open("state", "w")
         if file then
             local serializedState = textutils.serialize(state)
             file.write(serializedState)
             file.close()
+        else
+            print("Error: Could not open state file for writing")
+            return nil
         end
     else
         -- Read and deserialize state from file
@@ -78,22 +89,23 @@ function Current(coordinates, face)
         if file then
             local serializedState = file.readAll()
             file.close()
+            
             state = textutils.unserialize(serializedState)
         else
+            print("Error: Could not open state file for reading")
             return nil -- Return nil if the file doesn't exist
         end
     end
+    
     -- Format the position string
     if state.location then
-        if state.location.facing then
-            return string.format("%d,%d,%d:%s", state.location.X, state.location.Y, state.location.Z, state.location.facing)
-        else
-            return string.format("%d,%d,%d", state.location.X, state.location.Y, state.location.Z)
-        end
+        local facingStr = state.location.facing and (":" .. state.location.facing) or ""
+        return string.format("%d,%d,%d%s", state.location.X, state.location.Y, state.location.Z, facingStr)
     else
         return nil
     end
 end
+
 
 -- Function to update position based on direction
 function updatePosition(direction)

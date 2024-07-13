@@ -9,6 +9,25 @@ local config = {}
 --     ####### #######
 config.mine_entrance = {x = 104, y = 76, z = 215}
 me = mine_entrance
+config.homeArea = {
+    min_x = state.start.X - 5,
+    max_x = state.start.X + 5,
+    min_y = state.start.Y,
+    max_y = state.start.Y + 5,
+    min_z = state.start.Z - 5,
+    max_z = state.start.Z + 5
+}
+
+config.locations = {
+    refuel = {x = 104, y = 76, z = 215},
+    dropoff = {x = 104, y = 76, z = 215},
+    mineEnter = {x = 104, y = 76, z = 215},
+    mineExit = {x = 104, y = 76, z = 215},
+    homeArea = {min_x = state.start.X - 10,  max_x = state.start.X + 10,
+                min_y = state.start.Y, min_z = state.start.Z - 10,
+                max_y = state.start.Y + 10, max_z = state.start.Z + 10}
+    
+}
 
 config.use_pairs = true
 config.mission_length = 200 --max amount of blocks to move in a mission
@@ -21,14 +40,12 @@ config.mine_levels = {
     --     between each listed level.
     -- Level chances should sum to 1.0
     -- e.g.
-    {level = 63, chance = 1.0},
-}
+    {level = 63, chance = 1.0},}
 
 config.dig_disallow = {
     'computer',
     'chest',
-    'chair',
-}
+    'chair',}
 
 config.blocktags = {
     -- ALL BLOCKS WITH ONE OF THESE TAGS A TURTLE CONSIDERS ORE
@@ -37,8 +54,7 @@ config.blocktags = {
     ['c:ores'] = true,
     ['techreborn:ores'] = true,
     ['c:raw_ores'] = true,
-    ['c:gems'] = true,
-}
+    ['c:gems'] = true,}
 
 config.orenames = {
     -- ALL THE BLOCKS A TURTLE CONSIDERS ORE
@@ -74,22 +90,20 @@ config.orenames = {
     ['minecraft:redstone_ore'] = true,
     ['galacticraftcore:basic_block_core'] = true,
     ['mekanism:oreblock'] = true,
-    ['appliedenergistics2:quartz_ore'] = true
-}
+    ['appliedenergistics2:quartz_ore'] = true}
 
 config.gravitynames = {
     -- ALL BLOCKS AFFECTED BY GRAVITY
     ['minecraft:gravel'] = true,
-    ['minecraft:sand'] = true,
-}
+    ['minecraft:sand'] = true,}
+
 config.fuelnames = {
     -- ITEMS THE TURTLE CONSIDERS FUEL
-    ['minecraft:coal'] = 80,
-    ['minecraft:coal_block'] = 720,
-    ['minecraft:charcoal'] = 80,
-    ['minecraft:charcoal_block'] = 720,
-    ['minecraft:lava_bucket'] = 1000,
-    ['minecraft:blaze_rod'] = 120,
-}
+    ['minecraft:coal'] = (80),
+    ['minecraft:coal_block'] = (720),
+    ['minecraft:charcoal'] = (80),
+    ['minecraft:charcoal_block'] = (720),
+    ['minecraft:lava_bucket'] = (1000),
+    ['minecraft:blaze_rod'] = (120),}
 
-config.fuel_per_unit = fuelnames[item]()
+config.fuel_per_unit = config.fuelnames[item]()
