@@ -1,5 +1,5 @@
-
-
+inf = 1e309
+local config = {}
 -- LOCATION OF THE CENTER OF THE MINE
 --     the y value should be set to the height
 --     1 above the surface:
@@ -7,15 +7,15 @@
 --            Y
 --     ####### #######
 --     ####### #######
-mine_entrance = {x = 104, y = 76, z = 215}
+config.mine_entrance = {x = 104, y = 76, z = 215}
 me = mine_entrance
 
-use_pairs = true
-mission_length = 200 --max amount of blocks to move in a mission
-fuelpadding = 10 --extra fuel to keep in the tank
+config.use_pairs = true
+config.mission_length = 200 --max amount of blocks to move in a mission
+config.fuelbuffer = 10 --extra fuel to keep in the tank
 
 
-mine_levels = {
+config.mine_levels = {
     -- LEVELS INCLUDED IN THE MINE
     --     turtles will pick randomly with weight
     --     between each listed level.
@@ -24,13 +24,13 @@ mine_levels = {
     {level = 63, chance = 1.0},
 }
 
-dig_disallow = {
+config.dig_disallow = {
     'computer',
     'chest',
     'chair',
 }
 
-blocktags = {
+config.blocktags = {
     -- ALL BLOCKS WITH ONE OF THESE TAGS A TURTLE CONSIDERS ORE
     ['forge:ores'] = true,
     ['forge:ores/certus_quartz'] = true,
@@ -40,7 +40,7 @@ blocktags = {
     ['c:gems'] = true,
 }
 
-orenames = {
+config.orenames = {
     -- ALL THE BLOCKS A TURTLE CONSIDERS ORE
     ['BigReactors:YelloriteOre'] = true,
     ['bigreactors:oreyellorite'] = true,
@@ -77,12 +77,12 @@ orenames = {
     ['appliedenergistics2:quartz_ore'] = true
 }
 
-gravitynames = {
+config.gravitynames = {
     -- ALL BLOCKS AFFECTED BY GRAVITY
     ['minecraft:gravel'] = true,
     ['minecraft:sand'] = true,
 }
-fuelnames = {
+config.fuelnames = {
     -- ITEMS THE TURTLE CONSIDERS FUEL
     ['minecraft:coal'] = 80,
     ['minecraft:coal_block'] = 720,
@@ -92,4 +92,4 @@ fuelnames = {
     ['minecraft:blaze_rod'] = 120,
 }
 
-fuel_per_unit = fuelnames[item]()
+config.fuel_per_unit = fuelnames[item]()

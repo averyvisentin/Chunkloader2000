@@ -3,7 +3,7 @@ for _, side in ipairs(peripheral.getNames()) do
     if peripheral.getType(side) == "chunk_vial" or "chunkloader" or "chunkvial" or "chunk" then
         os.setComputerLabel('ChunkTurtle ' .. os.getComputerID())
     else
-    if peripheral.getType(side) == "pickaxe" then
+    if peripheral.getType(side) == "axe" then
         os.setComputerLabel('MinerTurtle ' .. os.getComputerID())
     end
     end
@@ -29,23 +29,6 @@ for _, side in ipairs(peripheral.getNames()) do
         break
     end
 end
-
-function StartPosition(coords, facing)
-    local startX, startY, startZ = gps.locate(5)
-    local file = fs.open("/location.txt", "w")
-    if facing then
-        file.writeLine("Start Position: " .. startX .. ", " .. startY .. ", " .. startZ .. ", Facing: " .. facing)
-    else
-        file.writeLine("Start Position: " .. startX .. ", " .. startY .. ", " .. startZ)
-    end
-    file.close()
-    if facing then
-        return startX .. ',' .. startY .. ',' .. startZ .. ':' .. facing
-    else
-        return startX .. ',' .. startY .. ',' .. startZ
-    end
-end
-
 
 -- LAUNCH PROGRAMS AS SEPARATE THREADS
 --multishell.launch({}, '/report.lua')
