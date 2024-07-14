@@ -4,16 +4,12 @@ modem.open()
 rednet.open(modem)  -- Adjust the side based on your setup
 
 -- INITIALIZE APIS
-if fs.exists('/apis') then
-    fs.delete('/apis')
-end
-fs.makeDir('/apis')
-fs.copy('disk/Hank/state.lua', '/apis/state')
-fs.copy('disk//Hank/rednet.lua', '/apis/rednet')
-fs.copy('disk/Hank/dummy.lua', '/apis/dummy')
-os.loadAPI('/apis/rednet')
-os.loadAPI('/apis/state')
-os.loadAPI('/apis/dummys')
+fs.copy('disk/Hank/state.lua', 'state.lua')
+fs.copy('disk//Hank/rednet.lua', 'rednet.lua')
+fs.copy('disk/Hank/dummy.lua', 'dummy.lua')
+os.loadAPI('rednet.lua')
+os.loadAPI('state.lua')
+os.loadAPI('dummys.lua')
 
 
 

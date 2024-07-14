@@ -46,7 +46,6 @@ local function waitForPairing(role)
         end
     end
 end
-
 -- Main pairing logic
 if os.getComputerLabel():find("MinerTurtle") then
     announceAvailability("MinerTurtle")
@@ -65,3 +64,13 @@ multishell.launch({}, '/inout.lua')
 multishell.launch({}, '/chico.lua')
 multishell.setTitle(1, 'inout')
 multishell.setTitle(2, 'Chico')
+
+-- Open rednet on any available modem
+for _, side in ipairs(peripheral.getNames()) do
+    if peripheral.getType(side) == "modem" then
+        rednet.open(side)
+
+    end
+end
+
+

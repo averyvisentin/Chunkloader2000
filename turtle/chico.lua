@@ -4,16 +4,17 @@ config = require("/apis/config")
 actions = require("/apis/actions")
 state = require("/apis/state")
 inout = require("/apis/inout")
+
 -- Define tasks for miner turtles
 state.turtles.minerTasks = {
     go_mine = {
         prepare = function()
             print("Preparing to go to the mine...")
             local target = config.locations.mineEnter
-            local Current = basics.Current(coordinates, facing)
+            local current = basics.Current(state.position, state.orientation)
             actions.prepare()
-            actions.go_to(Current, target)
-            print("Going to Entrance") -- Preparation steps here 
+            actions.go_to(current, target)
+            print("Going to Entrance") -- Preparation steps here
         end,
         mineshaft = function()
             print("Mining")
@@ -23,7 +24,6 @@ state.turtles.minerTasks = {
         strip = function()
             print("Cleaning up after mining...")
             actions.stripmine()
-
         end,
     },
     go_fish = {
@@ -60,21 +60,58 @@ state.turtles.chunkTasks = {
             actions.cleanup()
         end,
     },
-    chunk_unload = {
+    follow_miner = {
         prepare = function()
-            print("Preparing for chunk unloading...")
+            print("Preparing to follow miner...")
             actions.prepare()
         end,
         execute = function()
-            print("Going to unload chunks...")
-            actions.go_to(config.locations.chunk)
-            actions.unload_chunks()
+            print("Following miner...")
+            while true do
+                -- Fetch miner's position (assumes communication with miner)
+                local minerPosition = inout.getMinerPosition()
+                if minerPosition then
+                    actions.go_to(state.position, minerPosition)
+                    -- Perform fuel check and block scan
+                    actions.fuel_check()
+                    actions.scan_blocks()
+                end
+            end
         end,
         cleanup = function()
-            print("Cleaning up after chunk unloading...")
+            print("Cleaning up after following miner...")
             actions.cleanup()
         end,
     },
+}
+
+-- Implementing mining loop task for miner turtle
+state.turtles.minerTasks.mining_loop = {
+    prepare = function()
+        print("Preparing for mining loop...")
+        local target = config.locations.mineEnter
+        local current = basics.Current(state.position, state.orientation)
+        actions.prepare()
+        actions.go_to(current, target)
+    end,
+    mine = function()
+        print("Starting mining loop...")
+        while true do
+            actions.mineshaft(config.mine_levels)
+            actions.stripmine()
+            -- Check for fuel and inventory space
+            if actions.check_fuel() < config.min_fuel or actions.check_inventory_space() < config.min_inventory_space then
+                actions.return_to_base()
+                actions.refuel()
+                actions.dump_inventory()
+                actions.go_to(state.locations.mine)
+            end
+        end
+    end,
+    cleanup = function()
+        print("Cleaning up after mining loop...")
+        actions.cleanup()
+    end,
 }
 
 -- Execute all functions for each task in the minerTasks table
@@ -89,13 +126,10 @@ end
 
 -- Execute all functions for each task in the chunkTasks table
 print("Executing Chunk Tasks")
-for taskName, task in pairs(state.chunkTasks) do
+for taskName, task in pairs(state.turtles.chunkTasks) do
     print("Starting task: " .. taskName)
     for functionName, functionCall in pairs(task) do
         print("Executing: " .. functionName)
         functionCall()
     end
 end
-
---{we want a main loop of this script to update current location and log movement using
----functions from basics.lua, 

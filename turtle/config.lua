@@ -1,5 +1,4 @@
-inf = 1e309
-config = {}
+
 -- LOCATION OF THE CENTER OF THE MINE
 --     the y value should be set to the height
 --     1 above the surface:
@@ -10,7 +9,7 @@ config = {}
 
 
 max_attempts = 5
-
+hub_ID = 1
 dig_enabled = true
 
 attack_enabled = true
@@ -95,12 +94,12 @@ gravitynames = {
 
 fuelnames = {
     -- ITEMS THE TURTLE CONSIDERS FUEL
-    ['minecraft:coal'] = (80),
-    ['minecraft:coal_block'] = (720),
-    ['minecraft:charcoal'] = (80),
-    ['minecraft:charcoal_block'] = (720),
-    ['minecraft:lava_bucket'] = (1000),
-    ['minecraft:blaze_rod'] = (120),}
+    ['minecraft:coal'] = 80,
+    ['minecraft:coal_block'] = 720,
+    ['minecraft:charcoal'] = 80,
+    ['minecraft:charcoal_block'] = 720,
+    ['minecraft:lava_bucket'] = 1000,
+    ['minecraft:blaze_rod'] = 120,}
 
 fuel_per_unit = fuelnames[item]
 

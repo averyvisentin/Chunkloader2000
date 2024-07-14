@@ -124,9 +124,9 @@ end
 
 function basics.Log_movement(direction) --adjust location and orientation based on movement
     if direction == 'up' then --so y plus is upvalue
-        state.location.y = state.location.y + 1
+        state.location.y = state.location.y +1
     elseif direction == 'down' then
-        state.location.y = state.location.y - 1
+        state.location.y = state.location.y -1
     elseif direction == 'forward' then
         bump = Bumps[state.orientation]
         state.location = {x = state.location.x + bump[1], y = state.location.y + bump[2], z = state.location.z + bump[3]}
@@ -138,7 +138,6 @@ function basics.Log_movement(direction) --adjust location and orientation based 
     elseif direction == 'right' then
         state.orientation = right_shift[state.orientation]
     end
-    broadcastAndLogGPS(direction)
     return true
 end
 
@@ -165,50 +164,6 @@ function basics.In_area(xyz, area) --checks if xyz is in an area, defined by a t
     end
     return false
 end
-
-function basics.Calibrate()
-    -- GEOPOSITION BY MOVING TO ADJACENT BLOCK AND BACK
-    local sx, sy, sz = gps.locate()
-    if not sx or not sy or not sz then
-        return false
-    end
-    for i = 1, 4 do
-        -- TRY TO FIND EMPTY ADJACENT BLOCK
-        if not turtle.detect() then
-            break
-        end
-        if not turtle.turnRight() then return false end
-    end
-    if turtle.detect() then
-        -- TRY TO DIG ADJACENT BLOCK
-        for i = 1, 4 do
-            dig(forward)
-            if not turtle.detect() then
-                break
-            end
-            if not turtle.turnRight() then return false end
-        end
-        if turtle.detect() then
-            return false
-        end
-    end
-    if not turtle.forward() then return false end
-    local nx, ny, nz = Locate()
-    if nx == sx + 1 then
-        state.orientation = 'east'
-    elseif nx == sx - 1 then
-        state.orientation = 'west'
-    elseif nz == sz + 1 then
-        state.orientation = 'south'
-    elseif nz == sz - 1 then
-        state.orientation = 'north'
-    else
-        return false
-    end
-    state.location = {x = nx, y = ny, z = nz}
-    basics.Log_movement(direction)
-end
-
 
 function basics.Distance(point1, point2)
     local dx = point2.x - point1.x
