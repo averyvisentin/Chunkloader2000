@@ -1,5 +1,5 @@
 inf = 1e309
-local config = {}
+config = {}
 -- LOCATION OF THE CENTER OF THE MINE
 --     the y value should be set to the height
 --     1 above the surface:
@@ -7,34 +7,30 @@ local config = {}
 --            Y
 --     ####### #######
 --     ####### #######
-config.mine_entrance = {x = 104, y = 76, z = 215}
-me = mine_entrance
-config.homeArea = {
-    min_x = state.start.X - 5,
-    max_x = state.start.X + 5,
-    min_y = state.start.Y,
-    max_y = state.start.Y + 5,
-    min_z = state.start.Z - 5,
-    max_z = state.start.Z + 5
-}
 
-config.locations = {
-    refuel = {x = 104, y = 76, z = 215},
-    dropoff = {x = 104, y = 76, z = 215},
-    mineEnter = {x = 104, y = 76, z = 215},
-    mineExit = {x = 104, y = 76, z = 215},
-    homeArea = {min_x = state.start.X - 10,  max_x = state.start.X + 10,
-                min_y = state.start.Y, min_z = state.start.Z - 10,
-                max_y = state.start.Y + 10, max_z = state.start.Z + 10}
+
+max_attempts = 5
+
+dig_enabled = true
+
+attack_enabled = true
+
+locations = {
+    home = {x = 104, y = 76, z = 215}, --set where you want to dig 
+    refuel = {x = 104, y = 76, z = 215}, --set to fuel chest
+    vault = {x = 104, y = 76, z = 215}, --set to item drop
+    mineEnter = {x = 104, y = 75, z = 215}, --one block below home
+    mineExit = {x = 104, y = 76, z = 214}, 
+    homeArea = {min_x = state.start.X - 10,  max_x = state.start.X + 10, --location where turtle sleeps,
+                min_y = state.start.Y, min_z = state.start.Z - 10,      --gets fuel and dumps items
+                max_y = state.start.Y + 10, max_z = state.start.Z + 10} --near the mine entrance and hub computer
     
 }
-
-config.use_pairs = true
-config.mission_length = 200 --max amount of blocks to move in a mission
-config.fuelbuffer = 10 --extra fuel to keep in the tank
+mission_length = 200 --max amount of blocks to move in a mission
+fuelbuffer = 10 --extra fuel to keep in the tank
 
 
-config.mine_levels = {
+mine_levels = {
     -- LEVELS INCLUDED IN THE MINE
     --     turtles will pick randomly with weight
     --     between each listed level.
@@ -42,12 +38,12 @@ config.mine_levels = {
     -- e.g.
     {level = 63, chance = 1.0},}
 
-config.dig_disallow = {
+    dig_disallow = {
     'computer',
     'chest',
     'chair',}
 
-config.blocktags = {
+blocktags = {
     -- ALL BLOCKS WITH ONE OF THESE TAGS A TURTLE CONSIDERS ORE
     ['forge:ores'] = true,
     ['forge:ores/certus_quartz'] = true,
@@ -56,7 +52,7 @@ config.blocktags = {
     ['c:raw_ores'] = true,
     ['c:gems'] = true,}
 
-config.orenames = {
+orenames = {
     -- ALL THE BLOCKS A TURTLE CONSIDERS ORE
     ['BigReactors:YelloriteOre'] = true,
     ['bigreactors:oreyellorite'] = true,
@@ -92,12 +88,12 @@ config.orenames = {
     ['mekanism:oreblock'] = true,
     ['appliedenergistics2:quartz_ore'] = true}
 
-config.gravitynames = {
+gravitynames = {
     -- ALL BLOCKS AFFECTED BY GRAVITY
     ['minecraft:gravel'] = true,
     ['minecraft:sand'] = true,}
 
-config.fuelnames = {
+fuelnames = {
     -- ITEMS THE TURTLE CONSIDERS FUEL
     ['minecraft:coal'] = (80),
     ['minecraft:coal_block'] = (720),
@@ -106,4 +102,6 @@ config.fuelnames = {
     ['minecraft:lava_bucket'] = (1000),
     ['minecraft:blaze_rod'] = (120),}
 
-config.fuel_per_unit = config.fuelnames[item]()
+fuel_per_unit = fuelnames[item]
+
+return config

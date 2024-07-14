@@ -1,39 +1,22 @@
 
-Bumps = {               
-    north = { 0,  0, -1},
-    south = { 0,  0,  1},
-    east  = { 1,  0,  0},
-    west  = {-1,  0,  0},
-}
-
-Left_shift = {--turn left 90 degrees
-    north = 'west',
-    south = 'east',
-    east  = 'north',
-    west  = 'south',
-}
-
-Right_shift = {--turn right 90 degrees
-    north = 'east',
-    south = 'west',
-    east  = 'south',
-    west  = 'north',
-}
-
-Reverse_shift = {--180 degrees
-    north = 'south',
-    south = 'north',
-    east  = 'west',
-    west  = 'east',
-}
+Bumps = {north = { 0,  0, -1}, south = { 0,  0,  1},
+         east  = { 1,  0,  0}, west  = {-1,  0,  0},}
+--turn left 90 degrees
+Left_shift = {north = 'west', south = 'east',
+              east  = 'north', west  = 'south',}
+--turn right 90 degrees
+Right_shift = {north = 'east',south = 'west',
+               east  = 'south', west  = 'north',}
+--180 degrees
+Reverse_shift = {north = 'south', south = 'north',
+                 east  = 'west', west  = 'east',}
 
 local state = {}
 
-
-function Start(coordinates, facing) -- Function to set the starting position
+function Start(coordinates, facing) -- Function to set the absolute starting position
     -- Initialize the start sub-table if it doesn't exist
     state.start = state.start or {}
-    gps.locate(1)
+    gps.locate(0.1)
     if coordinates then
         -- Unpack coordinates directly into state.start
         state.start.X, state.start.Y, state.start.Z = table.unpack(coordinates)
@@ -58,11 +41,17 @@ function Start(coordinates, facing) -- Function to set the starting position
     end
 end
 
-function str_xyz(coordinates, facing)
-    if facing then
-        return coordinates.x .. ',' .. coordinates.y .. ',' .. coordinates.z .. ':' .. facing
+--quick locate with no logging
+function locate(xyz)
+    if not xyz then
+        local x, y, z = gps.locate()
+        if x and y and z then
+            return x .. ',' .. y .. ',' .. z
+        else
+            return nil, "GPS location failed"
+        end
     else
-        return coordinates.x .. ',' .. coordinates.y .. ',' .. coordinates.z
+        return x.x .. ',' .. y.y .. ',' .. z.z
     end
 end
 
@@ -107,6 +96,7 @@ function Current(coordinates, facing)
 end
 
 
+
 -- Function to update position based on direction
 function updatePosition(direction)
     if not state.location then
@@ -115,9 +105,9 @@ function updatePosition(direction)
     end
 
     if Bumps[direction] then
-        state.location.X = state.location.X + Bumps[direction].x
-        state.location.Y = state.location.Y + Bumps[direction].y
-        state.location.Z = state.location.Z + Bumps[direction].z
+        state.location.x = state.location.x + Bumps[direction].x
+        state.location.y = state.location.y + Bumps[direction].y
+        state.location.z = state.location.z + Bumps[direction].z
     else
         print("Invalid direction: " .. direction)
         return nil
@@ -136,8 +126,27 @@ function updatePosition(direction)
     return state.location
 end
 
+function log_movement(direction) --adjust location and orientation based on movement
+    if direction == 'up' then --so y plus is upvalue
+        state.location.y = state.location.y +1
+    elseif direction == 'down' then
+        state.location.y = state.location.y -1
+    elseif direction == 'forward' then
+        bump = bumps[state.orientation]
+        state.location = {x = state.location.x + bump[1], y = state.location.y + bump[2], z = state.location.z + bump[3]}
+    elseif direction == 'back' then
+        bump = bumps[state.orientation]
+        state.location = {x = state.location.x - bump[1], y = state.location.y - bump[2], z = state.location.z - bump[3]}
+    elseif direction == 'left' then
+        state.orientation = left_shift[state.orientation]
+    elseif direction == 'right' then
+        state.orientation = right_shift[state.orientation]
+    end
+    return true
+end
 
-function In_location(xyzo)            --checks if xyzo matches the specific location stored in state.location
+function In_location(xyzo, location)            
+local location = location or state.location
     for _, axis in pairs({'x', 'y', 'z'}) do    --iterates over x, y, z and checks if point coordinates match those specified
         if state.location[axis] then                  --in the state.location table
             if state.location[axis] ~= xyzo[axis] then
@@ -149,8 +158,18 @@ function In_location(xyzo)            --checks if xyzo matches the specific loca
 end
 
 function In_area(xyz, area) --checks if xyz is in an area, defined by a table with min and max xyz
-    return xyz.x <= area.max_x and xyz.x >= area.min_x and xyz.y <= area.max_y and xyz.y >= area.min_y and xyz.z <= area.max_z and xyz.z >= area.min_z
+    local locations = config.locations
+    if locations then
+        for _, location in ipairs(locations) do
+            if xyz.x <= location.max_x and xyz.x >= location.min_x and xyz.y <= location.max_y and xyz.y >= location.min_y and xyz.z <= location.max_z and xyz.z >= location.min_z then
+                return true
+            end
+        end
+    end
+    return false
 end
+
+
 
 function Distance(point1, point2)
     local dx = point2.x - point1.x
@@ -161,6 +180,49 @@ function Distance(point1, point2)
         return math.sqrt(dx*dx + dy*dy + dz*dz) -- 3D distance
     else
         return math.sqrt(dx*dx + dy*dy) -- 2D distance
+    end
+end
+
+
+state.blocktable = state.blocktable or {} -- Initialize blocktable if it doesn't exist
+
+-- Example function to gather mine data with actual location
+function mineData()
+    -- Get the current location using GPS or another method
+    local location = gps.locate() -- Get actual coordinates
+    if not location then
+        print("Error: Unable to locate GPS signal.")
+        return
+    end
+ local blockTable ={}
+    -- Store gathered data in state.blocktable
+    for _, block in ipairs(blockTable) do
+        table.insert(state.blocktable, block)
+    end
+
+    return location, blockTable
+end
+
+-- Example of how to use the gatherMineData function and print the state.blocktable
+function printBlockTable()
+    for _, block in ipairs(state.blocktable) do
+        print(string.format("Block: %s, Metadata: %d, Location: (%d, %d, %d)",
+            block.name, block.metadata, block.location.x, block.location.y, block.location.z))
+    end
+end
+
+
+-- Main loop to receive and execute commands
+    while true do
+    local senderID, message, protocol = rednet.receive()
+    state.logState("Received command: " .. message)
+    if actions[message] then
+        actions[message]()
+        -- Log mine data after executing an action
+        local location, blockTable = gatherMineData()
+        basics.logMineData(location, blockTable)
+    else
+        print("Unknown command: " .. message)
     end
 end
 
