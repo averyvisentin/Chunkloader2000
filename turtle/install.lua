@@ -25,13 +25,3 @@ copyFile(diskPath .. 'rednet.lua', apiPath .. 'inout.lua')
 copyFile(diskPath .. 'startup.lua', apiPath .. 'startup.lua')
 copyFile(diskPath .. 'chico.lua', apiPath .. 'chico.lua')
 
--- Load APIs
-os.loadAPI(apiPath .. 'state.lua')
-os.loadAPI(apiPath .. 'basics.lua')
-os.loadAPI(apiPath .. 'actions.lua')
-os.loadAPI(apiPath .. 'config.lua')
-os.loadAPI(apiPath .. 'inout.lua')
-os.loadAPI(apiPath .. 'chico.lua')
-
--- Additional debug output
-print('APIs loaded successfully.')

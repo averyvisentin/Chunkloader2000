@@ -1,11 +1,13 @@
--- Initialize APIs
+-- Load APIs
+os.loadAPI("apis/state.lua")
+os.loadAPI("apis/basics.lua")
+os.loadAPI("apis/actions.lua")
+os.loadAPI("apis/configs.lua")
+os.loadAPI("apis/inout.lua")
+os.loadAPI("apis/chico.lua")
 
-os.loadAPI('/apis/basics')
-os.loadAPI('/apis/actions')
-os.loadAPI('/apis/inout')
-os.loadAPI('/apis/state')
-os.loadAPI('/apis/config')
-os.loadAPI('/apis/chico')
+-- Additional debug output
+print('APIs loaded successfully.')
 
 -- Open rednet on any available modem
 for _, side in ipairs(peripheral.getNames()) do
