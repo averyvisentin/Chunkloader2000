@@ -225,27 +225,3 @@ end
         print("Unknown command: " .. message)
     end
 end
-
-function Dprint(thing) --debug print
-    -- PRINT; IF TABLE PRINT EACH ITEM
-    if type(thing) == 'table' then 
-        for k, v in pairs(thing) do
-            print(tostring(k) .. ': ' .. tostring(v))
-        end
-    else      --otherwise it just prints
-        print(thing)
-    end
-    return true
-end
-
-
--- Module export
-local basics = {
-      Bumps = Bumps
-    , distance = Distance
-    , Current = Current
-    , In_location = In_location
-    , In_area = In_area
-}
-
-return basics

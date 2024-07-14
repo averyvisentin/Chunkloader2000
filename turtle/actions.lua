@@ -1,7 +1,8 @@
 --we bad at this
 -- Example of calling functions from the basics module
-basics = require("basics.lua")
-config = require("config.lua")
+basics = require("/apis/basics.lua")
+config = require("/apis/config.lua")
+state = require("/apis/state.lua")
 updatePosition = basics.updatePosition(direction)
 currentPosition = basics.Current()
 isInLocation = basics.In_location()

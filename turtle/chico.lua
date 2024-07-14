@@ -1,9 +1,9 @@
 -- Import required modules
-basics = require("basics")
-config = require("config")
-actions = require("actions")
-state = require("state")
-
+basics = require("/apis/basics")
+config = require("/apis/config")
+actions = require("/apis/actions")
+state = require("/apis/state")
+inout = require("/apis/inout")
 -- Define tasks for miner turtles
 state.turtles.minerTasks = {
     go_mine = {

@@ -31,6 +31,7 @@ os.loadAPI(apiPath .. 'basics.lua')
 os.loadAPI(apiPath .. 'actions.lua')
 os.loadAPI(apiPath .. 'config.lua')
 os.loadAPI(apiPath .. 'inout.lua')
+os.loadAPI(apiPath .. 'chico.lua')
 
 -- Additional debug output
 print('APIs loaded successfully.')
