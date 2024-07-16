@@ -209,51 +209,48 @@ function actions.Handle_obstacle(direction)   -- handle an obstacle
     return false
 end
 
--- Unified function to handle block checking, ore detection, tags checking, and updating blocktable
 function actions.Check_block(direction)
-    local actions.Detect_ore(direction)   -- Detect ore in a specific direction
-        local success, block = turtle.inspect(direction)
-        if success then
-            return config.oretags[block.name] 
-            return local actions.Detect_ore(direction) or false
-        end
-        return nil
-    end
-    local location = basics.Locate()
-    if not location then
-        print("Error: Unable to locate GPS signal.")
-        return false
-    end
-
-    local success, block = turtle.inspect(direction)
+    -- Corrected turtle.inspect usage
+    local success, block = turtle.inspect()
     if success then
-        local isOre = local actions.Detect_ore(direction)
+        -- Assuming config.oretags is a table where block names are keys
+        -- and actions.Scan is a function that returns a boolean
+        local isOre = config.oretags[block.name] and actions.Scan(block.name) or false
+        
+        -- Assuming actions.Check_tags is a function that checks for valid tags
         local hasValidTag = actions.Check_tags(block)
         
-        -- Update blocktable
+        -- Assuming basics.Locate is a function that returns the current location
+        local location = basics.Locate()
+        if not location then
+            print("Error: Unable to locate GPS signal.")
+            return false
+        end
+        
+        -- Update blocktable with the new block information
         table.insert(blocktable, {
             name = block.name,
             isOre = isOre,
             location = location,
             turtleID = os.getComputerID()
         })
-
-        -- Update state with relevant information (example with block name)
+        
+        -- Update state with the last inspected block's name
         state.updateState("lastInspectedBlock", block.name)
-
-        -- Send block data (example)
+        
+        -- Send block data to a server or another system
         sendBlockData({
             name = block.name,
             isOre = isOre,
             location = location,
             turtleID = os.getComputerID()
         })
-
-        return isOre, location -- Return isOre and location
+        
+        return isOre, location
+    else
+        return false, nil
     end
-    return false
 end
-
 
 function actions.Scan(valid, ores)
     local directions = {'forward', 'up', 'down'}

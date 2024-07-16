@@ -15,7 +15,7 @@ Reverse_shift = {north = 'south', south = 'north',
 function basics.Start(coordinates, facing) -- Function to set the absolute starting position
     -- Initialize the start sub-table if it doesn't exist
     state.start = state.start or {}
-    gps.locate(0.1)
+    gps.locate(1)
     if coordinates then
         -- Unpack coordinates directly into state.start
         state.start.X, state.start.Y, state.start.Z = table.unpack(coordinates)
