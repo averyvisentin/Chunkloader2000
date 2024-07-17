@@ -17,11 +17,11 @@ local function copyFile(source, destination)
     end
 end
 
-copyFile(diskPath .. 'state.lua', apiPath .. 'state.lua')
+copyFile(diskPath .. 'log.lua', apiPath .. 'log.lua')
 copyFile(diskPath .. 'basics.lua', apiPath .. 'basics.lua')
 copyFile(diskPath .. 'actions.lua', apiPath .. 'actions.lua')
 copyFile(diskPath .. 'config.lua', apiPath .. 'config.lua')
-copyFile(diskPath .. 'rednet.lua', apiPath .. 'inout.lua')
+copyFile(diskPath .. 'inout.lua', apiPath .. 'inout.lua')
 copyFile(diskPath .. 'startup.lua', apiPath .. 'startup.lua')
 copyFile(diskPath .. 'chico.lua', apiPath .. 'chico.lua')
 

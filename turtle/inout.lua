@@ -1,4 +1,4 @@
-state = require("state")
+log = require("turtle.log")
 
 -- Main loop to receive and execute commands
 while true do
@@ -6,10 +6,10 @@ while true do
     print("Received command: " .. message)
 
     -- Check if the message matches a task in minerTasks or chunkTasks
-    if state.turtles.minerTasks[message] then
-        executeTask(state.turtles.minerTasks[message])
-    elseif state.turtles.chunkTasks[message] then
-        executeTask(state.turtles.chunkTasks[message])
+    if log.turtles.minerTasks[message] then
+        executeTask(log.turtles.minerTasks[message])
+    elseif log.turtles.chunkTasks[message] then
+        executeTask(log.turtles.chunkTasks[message])
     else
         print("Unknown command: " .. message)
     end
@@ -58,12 +58,12 @@ end
 -- Start the broadcasting and logging function
 broadcastAndLogGPS()
 
-    -- Send updated state information back to the hub computer
-    rednet.send(senderID, textutils.serialize(state))  -- Serialize state and send it back
+    -- Send updated log information back to the hub computer
+    rednet.send(senderID, textutils.serialize(log))  -- Serialize log and send it back
 end
 
 local HUB_ID = 1 -- Set your hub computer ID
-local FILE_CHANNEL = 100
+FILE_CHANNEL = "100"
 
 function SavePath(path)
     rednet.send(HUB_ID, {command = "save_path", data = path}, FILE_CHANNEL)
